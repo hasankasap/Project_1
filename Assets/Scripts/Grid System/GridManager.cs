@@ -73,10 +73,11 @@ namespace Game.GridSystem
             Vector3 hitPoint = (Vector3)obj[1];
             int[] index = grid.FindSlotIndex(target);
 
-            if (index == null || grid.IsIndexEmpty(index))
+            if (index == null || !grid.IsIndexEmpty(index))
                 return;
 
             grid.PlaceIntoCell(index, target, hitPoint.z);
+            target.transform.parent.GetComponent<Animator>().SetTrigger("Click");
 
             bool scoreCondition = grid.CheckCellsForScore();
             if (scoreCondition)
