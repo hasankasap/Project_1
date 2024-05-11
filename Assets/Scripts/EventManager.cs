@@ -6,7 +6,7 @@ public class EventManager : MonoBehaviour
 {
     private static EventManager eventManager;
 
-    public static EventManager instance
+    public static EventManager Instance
     {
         get
         {
@@ -41,15 +41,15 @@ public class EventManager : MonoBehaviour
     public static void StartListening(string eventName, Action<object[]> listener)
     {
         Action<object[]> thisEvent;
-        if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
+        if (Instance.eventDictionary.TryGetValue(eventName, out thisEvent))
         {
             thisEvent += listener;
-            instance.eventDictionary[eventName] = thisEvent;
+            Instance.eventDictionary[eventName] = thisEvent;
         }
         else
         {
             thisEvent += listener;
-            instance.eventDictionary.Add(eventName, thisEvent);
+            Instance.eventDictionary.Add(eventName, thisEvent);
         }
     }
 
@@ -57,10 +57,10 @@ public class EventManager : MonoBehaviour
     {
         if (eventManager == null) return;
         Action<object[]> thisEvent;
-        if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
+        if (Instance.eventDictionary.TryGetValue(eventName, out thisEvent))
         {
             thisEvent -= listener;
-            instance.eventDictionary[eventName] = thisEvent;
+            Instance.eventDictionary[eventName] = thisEvent;
         }
     }
     public static bool ArrayNullOrEmtptyCheck(object[] obj)
@@ -75,7 +75,7 @@ public class EventManager : MonoBehaviour
     public static void TriggerEvent(string eventName, object[] parameters)
     {
         Action<object[]> thisEvent = null;
-        if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
+        if (Instance.eventDictionary.TryGetValue(eventName, out thisEvent))
         {
             if (thisEvent != null)
             {
