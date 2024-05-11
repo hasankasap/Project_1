@@ -8,7 +8,6 @@ namespace Game.GridSystem
     [RequireComponent(typeof(Grid), typeof(GridGenerator))]
     public class GridManager : MonoBehaviour
     {
-        public int Score;
         [SerializeField] private GridInitSettings gridInitSettings;
         private Grid grid;
         private GridGenerator generator;
@@ -16,33 +15,23 @@ namespace Game.GridSystem
         void OnEnable()
         {
             EventManager.StartListening(GameEvents.PLACE_INTO_CELL, PlaceIntoCell);
+            EventManager.StartListening(GameEvents.REBUILD, OnRebuild);
         }
         void OnDisable()
         {
             EventManager.StopListening(GameEvents.PLACE_INTO_CELL, PlaceIntoCell);
+            EventManager.StopListening(GameEvents.REBUILD, OnRebuild);
         }
         void Start()
         {
             Initialize();
-        }
-        public void SetGridSize(string size)
-        {
-            int wantedSize = int.Parse(size);
-            if (wantedSize >= gridInitSettings.GridMinSize)
-                grid.Properties.Size = wantedSize;
-            else
-            {
-                grid.Properties.Size = gridInitSettings.GridMinSize;
-                // TODO: min size warning
-            }
         }
         public void Initialize()
         {
             generator = GetComponent<GridGenerator>();
             if (grid == null)
                 grid = GetComponent<Grid>();
-            grid.Properties = gridInitSettings.GridProperties;
-            ResetScore();
+            grid.SetProperTies(gridInitSettings.GridProperties);
             GenerateGrid();
         }
         public void GenerateGrid()
@@ -54,12 +43,12 @@ namespace Game.GridSystem
             }
                 
             EventManager.TriggerEvent(GameEvents.GENERATE_GRID, new object[] { grid });
-            ResetScore();
         }
-        private void ResetScore()
+        private void OnRebuild(object[] obj)
         {
-            Score = 0;
-            // TODO : reset score ui
+            int newSize = (int)obj[0];
+            grid.Properties.Size = newSize;
+            GenerateGrid();
         }
         private void PlaceIntoCell(object[] obj)
         {
@@ -82,8 +71,7 @@ namespace Game.GridSystem
             bool scoreCondition = grid.CheckCellsForScore();
             if (scoreCondition)
             {
-                Score++;
-                // TODO : update score ui
+                EventManager.TriggerEvent(GameEvents.INCREASE_SCORE, null);
                 grid.ClearMatchedObjects();
             }
         }

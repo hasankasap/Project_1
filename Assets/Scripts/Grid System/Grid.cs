@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Game.GridSystem
 {
     public class Grid : MonoBehaviour
-    {  
+    {
         public GridProperties Properties;
         public GameObject[,] Cells;
         public List<GridPlacedObject> PlacedObjects = new List<GridPlacedObject>();
@@ -24,6 +24,14 @@ namespace Game.GridSystem
             newObject.PlacementObject = temp;
             newObject.Index = index;
             PlacedObjects.Add(newObject);
+        }
+        public void SetProperTies(GridProperties wantedProperties)
+        {
+            Properties = new GridProperties();
+            Properties.CellPrefab = wantedProperties.CellPrefab;
+            Properties.PlacementObject = wantedProperties.PlacementObject;
+            Properties.Size = wantedProperties.Size;
+            Properties.Spacing = wantedProperties.Spacing;
         }
         public bool IsIndexEmpty(int[] targetIndex)
         {
@@ -46,7 +54,6 @@ namespace Game.GridSystem
             }
             return null;
         }
-
         public bool CheckCellsForScore()
         {
             if (PlacedObjects.Count == 0) return false;
