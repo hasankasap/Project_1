@@ -50,9 +50,10 @@ namespace Game.GridSystem
         public bool CheckCellsForScore()
         {
             if (PlacedObjects.Count == 0) return false;
-            List<GridPlacedObject> neighbours = new List<GridPlacedObject>();
+
             foreach (GridPlacedObject item in PlacedObjects)
             {
+                List<GridPlacedObject> neighbours = new List<GridPlacedObject>();
                 List<int[]> ints = new List<int[]>();
                 ints.Add(new int[] { item.Index[0], item.Index[1] + 1 }); // right
                 ints.Add(new int[] { item.Index[0], item.Index[1] - 1 }); // left
@@ -60,17 +61,33 @@ namespace Game.GridSystem
                 ints.Add(new int[] { item.Index[0] - 1, item.Index[1] }); // down
                 foreach (int[] i in ints)
                 {
-                    if (PlacedObjects.Any(po => po.Index.SequenceEqual(i)) && !neighbours.Contains(item))
+                    GridPlacedObject tmpNeighbour = PlacedObjects.FirstOrDefault(po => po.Index.SequenceEqual(i));
+                    if (tmpNeighbour != null)
                     {
-                        neighbours.Add(item);
+                        neighbours.Add(tmpNeighbour);
+                    }
+                }
+
+                if (neighbours.Count >= 2)
+                {
+                    foreach (var neighbour in neighbours)
+                    {
+                        if (!matchedObjects.Contains(neighbour))
+                        {
+                            matchedObjects.Add(neighbour);
+                        }
+                    }
+                    if (!matchedObjects.Contains(item))
+                    {
+                        matchedObjects.Add(item);
                     }
                 }
             }
-            if (neighbours.Count > 2)
+            if (matchedObjects.Count > 2)
             {
-                matchedObjects.AddRange(neighbours);
                 return true;
             }
+
             return false;
         }
         public void ClearPlacedObjects()
@@ -79,6 +96,7 @@ namespace Game.GridSystem
         }
         public void ClearMatchedObjects()
         {
+            PlacedObjects.RemoveAll(x => matchedObjects.Contains(x));
             ClearObjects(matchedObjects);
         }
         private void ClearObjects(List<GridPlacedObject> targetList)

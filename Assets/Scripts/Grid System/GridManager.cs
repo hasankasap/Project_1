@@ -84,7 +84,7 @@ namespace Game.GridSystem
             {
                 Score++;
                 // TODO : update score ui
-                grid.ClearPlacedObjects();
+                grid.ClearMatchedObjects();
             }
         }
     }
